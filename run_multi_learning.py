@@ -783,7 +783,7 @@ if __name__ == "__main__":
     parser.add_argument("--do_lower_case", action='store_true', help="Set this flag if you are using an uncased model.")
     # parser.add_argument("--eval_test", action="store_true", help="Whether to evaluate on final test set.")
     parser.add_argument("--mode", type=int, default=1, choices=[1, 2])
-    parser.add_argument("--train_batch_size", default=32, type=int,
+    parser.add_argument("--train_batch_size", default=8, type=int,
                         help="Total batch size for training.")
     parser.add_argument("--eval_batch_size", default=8, type=int,
                         help="Total batch size for eval.")
