@@ -53,24 +53,27 @@ import os
 #
 #     return examples
 
+import examples_generator
+
+
 # 1 TASK? 3 TASK TEST?
-# def get_tag_test_dataset(rurebus_data_dir: str):
-#     tokenized_dataset = get_tokenized_dataset(rurebus_dir=rurebus_data_dir)
-#     examples = []
-#     for annotated_file in tokenized_dataset:
-#         sentences, tokenized_sentences = tokenized_dataset[annotated_file]['file_sentences']
-#         for sent_id, (sentence, tokenized_sentence) in enumerate(zip(sentences, tokenized_sentences)):
-#             example_tags = ['O'] * len(tokenized_sentence)
-#             token = [token.text for token in tokenized_sentence]
-#             example = {
-#                 'token': token,
-#                 'tag': example_tags,
-#                 'id': f'test_part-{annotated_file}-{sent_id}',
-#                 'sentence': sentence,
-#                 'tokenized_sentence': tokenized_sentence
-#             }
-#             examples.append(example)
-#     return examples
+def get_tag_test_dataset(rurebus_data_dir: str):
+    tokenized_dataset = examples_generator.get_tokenized_dataset(rurebus_dir=rurebus_data_dir)
+    examples = []
+    for annotated_file in tokenized_dataset:
+        sentences, tokenized_sentences = tokenized_dataset[annotated_file]['file_sentences']
+        for sent_id, (sentence, tokenized_sentence) in enumerate(zip(sentences, tokenized_sentences)):
+            example_tags = ['O'] * len(tokenized_sentence)
+            token = [token.text for token in tokenized_sentence]
+            example = {
+                'token': token,
+                'tag': example_tags,
+                'id': f'test_part-{annotated_file}-{sent_id}',
+                'sentence': sentence,
+                'tokenized_sentence': tokenized_sentence
+            }
+            examples.append(example)
+    return examples
 
 
 # 1 TASK?
