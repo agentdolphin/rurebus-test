@@ -11,6 +11,18 @@ SpanText = namedtuple('SpanText', ['start', 'stop', 'text'])
 def write_tag_and_relation_predictions_to_folder(output_dir: str, eval_examples_path, eval_predictions_path,
                                                  force_write=False, postprocess=True, prefix_part='test_part',
                                                  bert_tokenizer='bert-base-multilingual-uncased', offset_in_id=2):
+    """
+    Main function. Should write annotated test examples.
+
+    @param output_dir: where to write ('output')
+    @param eval_examples_path: test.json examples path? ('examples/test.json')
+    @param eval_predictions_path: prediction path from run_multilearning ('out/_predictions.tsv')
+    @param force_write: whether to overwrite output of this function
+    @param postprocess: generates csv in predictions folder?? Unresolved dependencies here if True. Mutates df if False.
+    @param prefix_part: 'test_full' should be used, corresponding examples not found otherwise, used for naming for output files
+    @param bert_tokenizer: used only if postprocess == True
+    @param offset_in_id: default 2 is OK, used only for column-ids in df.
+    """
     check_output_dir(os.path.join(output_dir, 'relations'), force_write)
     check_output_dir(os.path.join(output_dir, 'set_1'), force_write)
 
@@ -95,17 +107,25 @@ def write_tag_ann_to_file(filename, predicted_tags_and_examples_tuples):
             tag = tags[token_start][2:]
             key = f'{example_id}-{span_id}'
             encountered_tags[key] = f'{len(encountered_tags) + 1}'
-            start_token = tokens[token_start]
-            stop_token = tokens[token_stop]
-            entity_text = sentence.text[start_token.start:stop_token.stop]
-            start = start_token.start + offset
-            stop = stop_token.stop + offset
-            result += f'T{encountered_tags[key]}\t{tag} {start} {stop}\t{entity_text}\n'
+            # Error with predicted tags out of range here?? fixed with if
+            if token_start < len(tokens) and token_stop < len(tokens):
+                start_token = tokens[token_start]
+                stop_token = tokens[token_stop]
+                entity_text = sentence.text[start_token.start:stop_token.stop]
+                start = start_token.start + offset
+                stop = stop_token.stop + offset
+                result += f'T{encountered_tags[key]}\t{tag} {start} {stop}\t{entity_text}\n'
 
-    print(result, file=open(filename, 'w'), end='')
+    print(result, file=open(filename, 'w', encoding='utf-8'), end='')
 
 
 def get_bio_spans(tags):
+    """
+    Gets spans tuples (from_span_index, to_span_index) from tags list
+
+    @param tags: list of tags (512) (example: ['O', 'O', 'B-CMP', 'B-CMP', 'O', 'O', 'I-MET', 'I-MET', 'I-MET', 'I-MET', 'I-MET', 'I-MET', 'I-MET', 'I-MET', 'I-MET', 'I-MET', 'O', ..., 'O')
+    @return: list of tuples, one element per tag (example: [(2, 2), (3, 3), (6, 15)])
+    """
     start_ids = [i for i, tag in enumerate(tags) if tag.startswith('B-')]
     additional_start_ids = []
     prev_tag = 'O'
@@ -134,7 +154,7 @@ def write_relation_ann_to_file(filename, predicted_relations_and_examples_tuples
             result += f'R{relation_id}\t{relation} {arg1} {arg2}\n'
             relation_id += 1
 
-    print(result, file=open(filename, 'w'), end='')
+    print(result, file=open(filename, 'w', encoding='utf-8'), end='')
 
 
 def get_formatted_relations(relations, example, corresponding_examples):
@@ -159,6 +179,12 @@ def get_formatted_relations(relations, example, corresponding_examples):
 
 
 def aggregate_tags_by_max_score(mini_dataset):
+    """
+    Gets array of predicted tags with max score from all sentence examples
+
+    @param mini_dataset: sentence whole-df subset as df of examples
+    @return: tags list of 512 elements (example: ['B-CMP', 'B-MET', 'I-MET', 'I-MET', 'I-MET', 'O', 'O', ..., 'O'])
+    """
     df = mini_dataset.copy().reset_index(drop=True)
     scores = np.array([x for x in df.tag_scores.values])
     tags = np.array([x for x in df.tag_pred.values])
@@ -170,6 +196,12 @@ def aggregate_tags_by_max_score(mini_dataset):
 
 
 def read_examples(examples_path):
+    """
+    Reads sentences from test.json.
+
+    @param examples_path: path to test.json
+    @return: examples list
+    """
     examples = json.load(open(examples_path))
     for i in range(len(examples)):
         examples[i]['sentence'] = SpanText(start=examples[i]['sentence'][0],
@@ -182,6 +214,12 @@ def read_examples(examples_path):
 
 
 def check_output_dir(output_dir: str, force_write: bool):
+    """
+    (force) makes dirs, connected with force_write flag from args
+
+    @param output_dir: output dir to (re)write
+    @param force_write: whether force_write mode is used
+    """
     if os.path.exists(output_dir):
         if force_write:
             print('overwriting existing files')
@@ -190,3 +228,13 @@ def check_output_dir(output_dir: str, force_write: bool):
             raise RuntimeError
     else:
         os.makedirs(output_dir, exist_ok=True)
+
+
+write_tag_and_relation_predictions_to_folder(
+    output_dir='out',
+    eval_examples_path='examples/test.json',
+    eval_predictions_path='output/_predictions.tsv',
+    prefix_part='test_full',
+    force_write=True,
+    postprocess=False
+)
