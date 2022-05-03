@@ -15,8 +15,8 @@ with open(os.path.join(EXAMPLES_PATH, EXAMPLES_FILE), 'w', encoding='utf-8') as 
     for part in RUREBUS_DATA_PARTS:
         part_examples = examples_generator.get_tag_and_relation_dataset(RUREBUS_DATA_DIR, part)
         examples.extend(part_examples)
-    dev_examples = [example for example in examples if example % 10 == 0]
-    examples = [example for example in examples if example % 10 != 0]
+    dev_examples = [example for example_id, example in enumerate(examples) if example_id % 10 == 0]
+    examples = [example for example_id, example in enumerate(examples) if example_id % 10 == 0]
     writer.write(json.dumps(examples))
     dev_writer.write(json.dumps(dev_examples))
 
