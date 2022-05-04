@@ -1,7 +1,7 @@
 import json
 import os.path
 
-import predictions_writer
+import examples_generator
 
 RUREBUS_DATA_DIR = 'train_data'
 RUREBUS_DATA_PARTS = ['train_part_1', 'train_part_2', 'train_part_3']
@@ -13,7 +13,7 @@ EXAMPLES_DEV_FILE = 'dev.json'
 examples = []
 with open(os.path.join(EXAMPLES_PATH, EXAMPLES_FILE), 'w', encoding='utf-8') as writer, open(os.path.join(EXAMPLES_PATH, EXAMPLES_DEV_FILE), 'w', encoding='utf-8') as dev_writer:
     for part in RUREBUS_DATA_PARTS:
-        part_examples = predictions_writer.get_tag_dataset(RUREBUS_DATA_DIR, part)
+        part_examples = examples_generator.get_tag_and_relation_dataset(RUREBUS_DATA_DIR, part)
         examples.extend(part_examples)
     dev_examples = [example for example_id, example in enumerate(examples) if example_id % 10 == 0]
     examples = [example for example_id, example in enumerate(examples) if example_id % 10 != 0]
@@ -29,7 +29,7 @@ EXAMPLES_TEST_FILE = 'test.json'
 examples = []
 with open(os.path.join(EXAMPLES_PATH, EXAMPLES_TEST_FILE), 'w', encoding='utf-8') as writer:
     for part in RUREBUS_TEST_DATA_PARTS:
-        part_examples = predictions_writer.get_tag_test_dataset(RUREBUS_TEST_DATA_DIR + "/" + part)
+        part_examples = examples_generator.get_tag_and_relation_dataset(RUREBUS_TEST_DATA_DIR, part)
         examples.extend(part_examples)
     print(f'test examples: {len(examples)}')
     writer.write(json.dumps(examples))
