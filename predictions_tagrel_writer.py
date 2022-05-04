@@ -230,11 +230,12 @@ def check_output_dir(output_dir: str, force_write: bool):
         os.makedirs(output_dir, exist_ok=True)
 
 
-write_tag_and_relation_predictions_to_folder(
-    output_dir='out',
-    eval_examples_path='examples/test.json',
-    eval_predictions_path='output/_predictions.tsv',
-    prefix_part='test_full',
-    force_write=True,
-    postprocess=False
-)
+if __name__ == '__main__':
+    write_tag_and_relation_predictions_to_folder(
+        output_dir='out',
+        eval_examples_path='examples/test.json',
+        eval_predictions_path='output/_predictions.tsv',
+        prefix_part='test_full',
+        force_write=True,
+        postprocess=False
+    )

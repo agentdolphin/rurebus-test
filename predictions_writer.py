@@ -124,9 +124,10 @@ def write_tag_predictions_to_folder(output_dir: str, eval_examples_path, eval_pr
         write_tag_ann_to_file(os.path.join(output_dir, f"{source_file_name}.ann"), predicted_tags_and_examples_tuples)
 
 
-write_tag_predictions_to_folder(
-    output_dir='out',
-    eval_examples_path='examples/test.json',
-    eval_predictions_path='output/_predictions.tsv',
-    force_write=True
-)
+if __name__ == '__main__':
+    write_tag_predictions_to_folder(
+        output_dir='out',
+        eval_examples_path='examples/test.json',
+        eval_predictions_path='output/_predictions.tsv',
+        force_write=True
+    )
