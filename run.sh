@@ -10,7 +10,7 @@ pip3 install torch torchvision torchaudio --extra-index-url https://download.pyt
 pip install razdel pandas scipy transformers scikit-learn && \
 mkdir examples && \
 python main.py && \
-python run_ner.py --from_tf False --data_dir ./examples --output_dir ./output --model bert-base-multilingual-uncased --train_batch_size 8 --eval_batch_size 8 --do_train --do_validate --do_eval && \
+python run_ner.py --data_dir ./examples --output_dir ./output --bert_model bert-base-multilingual-uncased --train_batch_size 8 --eval_batch_size 8 --task_name ner --do_train --do_validation --do_eval && \
 python predictions_writer.py
 #python run_multi_learning.py --from_tf False --data_dir ./examples --output_dir ./output --mode 1 --model bert-base-multilingual-uncased --learning_rate 1e-5 --do_train --do_validate --do_eval && \
 #python predictions_tagrel_writer.py
